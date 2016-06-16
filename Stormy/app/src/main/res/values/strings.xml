@@ -6,4 +6,6 @@
     <string name="network_unavaliable_message">Network is unavailable</string>
     <string name="title_activity_daily_forecast">DailyForecastActivity</string>
     <string name="no_daily_forecast_data">There is no data to display.</string>
+    <string name="ToastOnClickDaily" formatted="false">On %s the high will be %s and it will be %s</string>
+    <string name="ToastHourly" formatted="false">At %s it will be %s and %s</string>
 </resources>

@@ -33,7 +33,7 @@ public class HourlyForecastActivity extends AppCompatActivity {
         Parcelable[] parcelables = intent.getParcelableArrayExtra(MainActivity.HOURLY_FORECAST);
         mHours = Arrays.copyOf(parcelables, parcelables.length, Hour[].class);
 
-        HourAdapter adapter = new HourAdapter(mHours);
+        HourAdapter adapter = new HourAdapter(this, mHours);
         mRecyclerView.setAdapter(adapter);
 
         //LINHAS NECESSARIAS PARA RECYCLER QUE NAO SAO PARA LIST, VER DOCUMENTACAO PARA ESCOLHER SE É LINEAR OU GRID OU SL
