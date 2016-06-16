@@ -37,7 +37,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This week&apos;s color"
+        android:text="This week&apos;s weather"
         android:id="@+id/thisWeekLabel"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
