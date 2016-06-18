@@ -7,7 +7,7 @@ import java.util.Random;
  */
 public class factBook {
     //Fields (Member Variables) - Properties about the object
-    private final String[] mFacts = new String[]{"Ants stretch when they wake up in the morning.",
+    String[] mFacts = new String[]{"Ants stretch when they wake up in the morning.",
             "Ostriches can run faster than horses.",
             "Olympic gold medals are actually made mostly of silver.",
             "You are born with 300 bones; by the time you are an adult you will have 206.",

@@ -15,6 +15,8 @@ import java.util.Random;
 public class FunFactsActivity extends AppCompatActivity {
     //essa string TAG é para na hora de debugar, e acessar o log na ultima linha, o tag ser fixo para essa classe aqui
     public static final String TAG = FunFactsActivity.class.getSimpleName();
+    private static final String KEY_FACT = "KEY_FACT";
+    private static final String KEY_COLOR = "KEY_COLOR";
     // declaration of View variables
     private TextView mFactTextView;
     private Button mShowFactButton;
@@ -25,7 +27,31 @@ public class FunFactsActivity extends AppCompatActivity {
     //TEM QUE CRIAR OBJETO DA CLASSE FACTBOOK E COLORWHEEL QUE CRIAMOS!!!!
     private factBook mFactBook = new factBook();
     private ColorWheel mColorWheel = new ColorWheel();
+    private String mFact = mFactBook.mFacts[0];
+    private int mColor = Color.parseColor(mColorWheel.mColors[8]);
 
+    //Codigo para salvar/restaurar atividade
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(KEY_FACT, mFact);
+        outState.putInt(KEY_COLOR, mColor);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        mFact = savedInstanceState.getString(KEY_FACT);
+        mColor = savedInstanceState.getInt(KEY_COLOR);
+
+        mFactTextView.setText(mFact);
+        mRelativeLayout.setBackgroundColor(mColor);
+        mShowFactButton.setTextColor(mColor);
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,12 +67,13 @@ public class FunFactsActivity extends AppCompatActivity {
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int color = mColorWheel.getColor();
+                mColor = mColorWheel.getColor();
 
                 //update the screen with our dynamic fact
-                mFactTextView.setText(mFactBook.getFact());
-                mRelativeLayout.setBackgroundColor(color);
-                mShowFactButton.setTextColor(color);
+                mFact = (mFactBook.getFact());
+                mFactTextView.setText(mFact);
+                mRelativeLayout.setBackgroundColor(mColor);
+                mShowFactButton.setTextColor(mColor);
 
             }
         };
