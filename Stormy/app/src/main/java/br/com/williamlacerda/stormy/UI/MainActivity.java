@@ -1,10 +1,17 @@
 package br.com.williamlacerda.stormy.ui;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +20,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,11 +45,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final String DAILY_FORECAST = "DAILY_FORECAST";
     public static final String HOURLY_FORECAST = "HOURLY_FORECAST";
+    private static final int PERMISSION_ACCESS_COARSE_LOCATION = 10;
+    private GoogleApiClient mGoogleApiClient;
 
     private Forecast mForecast;
 
@@ -52,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.refreshImageView) ImageView mRefreshImageView;
     @BindView(R.id.progressBar) ProgressBar mProgressBar;
 
+    double latitude = -22.9516903;
+    double longitude = -43.1989178;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +75,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_COARSE_LOCATION },
+                    PERMISSION_ACCESS_COARSE_LOCATION);
+        }
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this, this, this).addApi(LocationServices.API).build();
+
         mProgressBar.setVisibility(View.INVISIBLE);
 
-        final double latitude = -22.9516903;
-        final double longitude = -43.1989178;
+
         mRefreshImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -273,5 +296,57 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
         //essa var hourly_forecast foi criada só pra sempre ser a mesma string e no outro act poder fazer main.hourly_for
         startActivity(intent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_ACCESS_COARSE_LOCATION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // All good!
+                } else {
+                    Toast.makeText(this, "Need your location!", Toast.LENGTH_SHORT).show();
+                }
+
+                break;
+        }
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+            latitude = lastLocation.getLatitude();
+            longitude = lastLocation.getLongitude();
+
+            Log.d("LOCATIONTAG", latitude + " "+ longitude);
+
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
     }
 }
